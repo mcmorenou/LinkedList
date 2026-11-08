@@ -73,21 +73,13 @@
                     _tail = _tail!.Prev;
                     return;
                 }
-                current.Prev.Next = current.Next.Prev;
-                current.Next.Prev = current.Prev.Next;
-
+                current.Prev.Next = current.Next;
+                current.Next.Prev = current.Prev;
+                return;
             }
-            
+          current= current.Next;  
         }
-
-        return false;
     }
-
-
-
-
-
-
 
 
     public override string ToString()
