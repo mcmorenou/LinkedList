@@ -1,31 +1,30 @@
 ﻿namespace Backend;
 
-   public class DoublyLinkedList<T>
+public class DoublyLinkedList<T> where T : IComparable<T>
+{
+    private DoubleNode<T>? _head;
+    private DoubleNode<T>? _tail;
+    private bool _ascending = true;
+
+    public DoublyLinkedList()
     {
-        private DoubleNode<T>? _head;
-        private DoubleNode<T>? _tail;
-
-        public DoublyLinkedList()
-        {
-            _head = null;
-            _tail = null;
-        }
-
-
+        _head = null;
+        _tail = null;
+    }
 
     public void InsertAtBeginning(T data)
     {
         var newNode = new DoubleNode<T>(data);
-        if (_head == null) 
+        if (_head == null)
         {
-        _head = newNode;
-        _tail = newNode;
+            _head = newNode;
+            _tail = newNode;
             return;
         }
-         newNode.Next = _head;
-         _head.Prev = newNode.Next;
-         _head= newNode;
-        }
+        newNode.Next = _head;
+        _head.Prev = newNode;
+        _head = newNode;
+    }
     public void InsertAtEnd(T data)
     {
         var newNode = new DoubleNode<T>(data);
@@ -43,42 +42,52 @@
     public bool Contains(T data)
     {
         var current = _head;
-        while(current != null) 
+        while (current != null)
         {
             if (current.Data!.Equals(data))
-            { 
-                return true; 
+            {
+                return true;
             }
             current = current.Next;
         }
 
         return false;
     }
-    public void Remove(T data)
+    public bool Remove(T data)
     {
         var current = _head;
         while (current != null)
         {
             if (current.Data!.Equals(data))
             {
-               if (current.Prev == null)
+                if (current.Prev == null)
                 {
-                    current.Next!.Prev = null;
-                    _head = _head!.Next;
-                    return;
+                    _head = current.Next;
+                    if (_head == null)
+                    {
+                        _tail = null;
+                    }
+                    else
+                    {
+                        _head.Prev = null;
+
+                    }
+                    return true;
+
                 }
                 if (current.Next == null)
                 {
                     current.Prev!.Next = null;
-                    _tail = _tail!.Prev;
-                    return;
+                    _tail = current.Prev;
+                    return true;
                 }
                 current.Prev.Next = current.Next;
                 current.Next.Prev = current.Prev;
-                return;
+                return true;
             }
-          current= current.Next;  
+            current = current.Next;
         }
+        return false;
     }
 
 
@@ -104,7 +113,44 @@
             current = current.Prev;
         }
         return $"{output} null";
+
     }
+
+    public void Insert(T data)
+    {
+        var current = _head;
+        while (current != null && !GoesAfter(current.Data!, data))
+        {
+            current = current!.Next;
+
+        }
+        if (current == null)
+        {
+            InsertAtEnd(data);
+            return;
+        }
+        if (current == _head)
+        {
+            InsertAtBeginning(data);
+            return;
+        }
+
+
+        var newNode = new DoubleNode<T>(data);
+        newNode.Prev = current.Prev;
+        newNode.Next = current;
+        current.Prev!.Next = newNode;
+        current.Prev = newNode;
+    }
+
+    private bool GoesAfter(T existing, T incoming)       
+    {
+        return _ascending
+            ? existing.CompareTo(incoming) > 0
+            : existing.CompareTo(incoming) < 0;
+    }
+
+
 
 }
 
