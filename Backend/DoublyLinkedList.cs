@@ -150,7 +150,77 @@ public class DoublyLinkedList<T> where T : IComparable<T>
             : existing.CompareTo(incoming) < 0;
     }
 
+    public void SortDescending()
+    {
+        if (!_ascending) return;
 
+        var current = _head;
+        while (current != null)
+        {
+            var oldNext = current.Next;
+            current.Next = current.Prev;
+            current.Prev = oldNext;
+            current = oldNext;
+        }
+        (_head, _tail) = (_tail, _head);
+        _ascending = false;
+    }
+
+
+    public List<(T Value, int Count)> Occurrences()
+    {
+        var result = new List<(T Value, int Count)>();
+        var current = _head;
+
+        while (current != null)
+        {
+            T value = current.Data!;
+            int count = 0;
+            while (current != null && current.Data!.Equals(value))
+            {
+                count++;
+                current = current.Next;
+            }
+            result.Add((value, count));
+        }
+        return result;
+    }
+
+    public (List<T> Modes, int Frequency) Modes()
+    {
+        var modes = new List<T>();
+        int max = 0;
+
+        foreach (var (value, count) in Occurrences())
+        {
+            if (count > max)
+            {
+                max = count;
+                modes.Clear();
+                modes.Add(value);
+            }
+            else if (count == max)
+            {
+                modes.Add(value);
+            }
+        }
+        return (modes, max);
+    }
+
+    public int RemoveAll(T data)
+    {
+        int removed = 0;
+        while (Remove(data))
+        {
+            removed++;
+        }
+        return removed;
+    }
 
 }
+
+
+
+
+
 
